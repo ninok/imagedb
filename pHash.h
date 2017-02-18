@@ -116,29 +116,29 @@ typedef struct ph_slice {
 
 struct BinHash 
 {
-	uint8_t *hash;
-	uint32_t bytelength;
-	uint32_t byteidx; // used by addbit()
-	uint8_t bitmask;  // used by addbit()
+    uint8_t *hash;
+    uint32_t bytelength;
+    uint32_t byteidx; // used by addbit()
+    uint8_t bitmask;  // used by addbit()
 
-	/*
-	 * add a single bit to hash. the bits are 
-	 * written from left to right.
-	 */
-	int addbit(uint8_t bit)
-	{
-		if (bitmask == 0) 
-		{
-			bitmask = 128; // reset bitmask to "10000000"
-			byteidx++;     // jump to next byte in array
-		}
+    /*
+     * add a single bit to hash. the bits are 
+     * written from left to right.
+     */
+    int addbit(uint8_t bit)
+    {
+        if (bitmask == 0) 
+        {
+            bitmask = 128; // reset bitmask to "10000000"
+            byteidx++;     // jump to next byte in array
+        }
 
-		if (byteidx >= bytelength) return -1;
-		
-		if (bit == 1) *(hash + byteidx) |= bitmask;
-		bitmask >>=1;
-		return 0;
-	}	
+        if (byteidx >= bytelength) return -1;
+        
+        if (bit == 1) *(hash + byteidx) |= bitmask;
+        bitmask >>=1;
+        return 0;
+    }	
 };
 
 BinHash* _ph_bmb_new(uint32_t bytelength);

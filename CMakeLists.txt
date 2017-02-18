@@ -17,11 +17,15 @@ link_directories(${Boost_LIBRARY_DIR_RELEASE})
     # 1.1.0
     # REQUIRED)
 
-
-
+#FIXME: Don't use ENV
 include_directories($ENV{CIMG_ROOT_DIR})
+
+#FIXME: Don't use ENV
+include_directories( $ENV{JPEG_ROOT}/include )
+link_directories( $ENV{JPEG_ROOT}/lib )
 
 add_executable(imgcmp main.cpp)
 
 target_link_libraries(imgcmp ${Boost_LIBRARIES})
-
+# target_link_libraries(imgcmp "turbojpeg.lib")
+target_link_libraries(imgcmp "jpeg-static.lib")
