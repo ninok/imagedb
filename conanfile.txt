@@ -1,0 +1,9 @@
+[requires]
+Boost/1.68.0@conan/stable
+OpenSSL/1.0.2o@conan/stable
+libjpeg-turbo/1.5.2@bincrafters/stable
+libjpeg/9b@bincrafters/stable
+sqlite3/3.21.0@bincrafters/stable
+
+[generators]
+cmake
