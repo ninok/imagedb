@@ -10,6 +10,9 @@
 
 #include <turbojpeg.h>
 
+#include <SQLiteCpp/Database.h>
+#include <sqlite3.h>
+
 #define cimg_use_jpeg
 //#include <CImg.h>
 
@@ -23,7 +26,15 @@ void search_recursive( const boost::filesystem::path& path, OnImageFile on_image
     {
         if ( is_directory(dir_iter->status() ) )
         {
-            search_recursive( dir_iter->path(), on_image_file );
+            try
+            {
+                search_recursive( dir_iter->path(), on_image_file );
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            
             continue;
         }
 
@@ -34,7 +45,6 @@ void search_recursive( const boost::filesystem::path& path, OnImageFile on_image
         }
 
         const boost::filesystem::path& extension = dir_iter->path().extension( );
-
         if ( !extension.compare( L".jpg" ) && !extension.compare( L".jpeg" ) )
         {
             continue;
@@ -94,12 +104,29 @@ std::string compute_image_hash( const boost::filesystem::path& path )
     return std::move(hash);
 }
 
-
 int main ( int argc, char* argv[])
 {
     using namespace boost::filesystem;
 
+    try
+    {
+        SQLite::Database db( "imgdb.sqlite", SQLite::OPEN_READWRITE|SQLite::OPEN_CREATE);
+        db.exec("DROP TABLE IF EXISTS images");
+        db.exec("CREATE TABLE images (id INTEGER PRIMARY KEY, filename TEXT, md5hash TEXT)");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
     const std::wstring target_path(L"C:\\Users\\kettlitz\\Pictures");
+#elif __APPLE__
+    const std::wstring target_path(L"/Users/kettlitz/Pictures");
+#else
+    // We assume everything else is Linux
+    const std::wstring target_path(L"/home/kettlitz/Pictures");
+#endif
 
     std::vector< std::future<std::string> > handles;
     auto&& on_image_file = [&handles] (const path& path) {
@@ -107,9 +134,7 @@ int main ( int argc, char* argv[])
         handles.emplace_back(std::move(handle));
     };
 
-    search_recursive( target_path, on_image_file );
-
-    //std :: wcout << "Found " << files.size( ) << " files" << std::endl;
+    // search_recursive( target_path, on_image_file );
 
     std::wcout << "Computing hashes ..." << std::endl;
 
