@@ -9,4 +9,5 @@ conan_basic_setup()
 add_executable(imgcmp main.cpp)
 set_target_properties(imgcmp PROPERTIES CMAKE_CXX_STANDARD 17)
 target_link_libraries(imgcmp ${CONAN_LIBS})
+
 target_include_directories(imgcmp PRIVATE ${CMAKE_SOURCE_DIR}/CmdParser)
