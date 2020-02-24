@@ -20,10 +20,17 @@ jobs:
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
     - name: pip
-      run: pip install wheel && pip install conan && pip show conan
+      run: |
+        pip install wheel
+        pip install conan
     - name: conan
       run: ~/.local/bin/conan install .
     - name: cmake
-      run: mkdir build && cd build && cmake ..
+      run: |
+        mkdir build
+        cd build
+        cmake ..
     - name: make
-      run: cd build && make
+      run: |
+        cd build
+        make
